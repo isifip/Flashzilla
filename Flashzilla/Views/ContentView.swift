@@ -18,15 +18,18 @@ struct ContentView: View {
     
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @Environment(\.accessibilityVoiceOverEnabled) var voiceOverEnabled
-    @State private var cards = Array<Card>(repeating: Card.example, count: 10)
+    @State private var cards = [Card]()
     
     @State private var timeRemaining = 100
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @Environment(\.scenePhase) var scenePhase
     @State private var isActive = true
+    
+    @State private var showingEditScreen = false
 
     var body: some View {
+        
         ZStack {
             Color.purple
                 .ignoresSafeArea()
@@ -81,6 +84,27 @@ struct ContentView: View {
                     isActive = false
                 }
             }
+            VStack {
+                HStack {
+                    Spacer()
+                    Button {
+                        showingEditScreen = true
+                    } label: {
+                        Image(systemName: "plus.circle")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 44, height: 44)
+                            .foregroundColor(.white)
+                            .padding(.horizontal)
+                            .padding(.vertical, 5)
+                            .background(.gray.opacity(0.7))
+                            .clipShape(Circle())
+                            .shadow(radius: 12)
+                    }
+                    .padding()
+                }
+                Spacer()
+            }
             if differentiateWithoutColor || voiceOverEnabled {
                 VStack {
                     Spacer()
@@ -119,6 +143,15 @@ struct ContentView: View {
                 }
             }
         }
+        .sheet(isPresented: $showingEditScreen, onDismiss: resetcards, content: EditCardView.init)
+        .onAppear(perform: resetcards)
+    }
+    func loadData() {
+        if let data = UserDefaults.standard.data(forKey: "Cards") {
+            if let decoded = try? JSONDecoder().decode([Card].self, from: data) {
+                cards = decoded
+            }
+        }
     }
     func removeCard(at index: Int) {
         guard index >= 0 else { return }
@@ -129,9 +162,9 @@ struct ContentView: View {
         }
     }
     func resetcards() {
-        cards = Array<Card>(repeating: Card.example, count: 10)
         timeRemaining = 100
         isActive = true
+        loadData()
     }
 }
 
