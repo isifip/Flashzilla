@@ -8,3 +8,5 @@ Very simple Cards app.
 
 - Accessible to Voicover users
 - Decoding/Encoding data to UserDefaults
+
+#SwiftUI is LOVE :)
