@@ -2,7 +2,8 @@
 
 Very simple Cards app. 
 
-- Part of the with HWS - Paul Hudson's course #100DaysOfSwiftUI.
+- HWS
+- Paul Hudson's course #100DaysOfSwiftUI.
 - Covering Days 86 to 91.
 
 
