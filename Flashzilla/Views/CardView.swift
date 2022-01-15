@@ -10,7 +10,7 @@ import SwiftUI
 struct CardView: View {
     
     let card: Card
-    var removal: (() -> Void)? = nil
+    var removal: ((Bool) -> Void)? = nil
     
     @State private var feedback = UINotificationFeedbackGenerator()
     
@@ -31,7 +31,9 @@ struct CardView: View {
                     differentiateWithoutColor
                     ? nil
                     : RoundedRectangle(cornerRadius: 25, style: .continuous)
-                        .fill(offset.width > 0 ? .green : .red)
+                        .fill(
+                            offset.width == 0 ? .white
+                            : offset.width > 0 ? .green : .red)
                 )
                 .shadow(color: .black.opacity(0.2), radius: 10)
             VStack(spacing: 10) {
@@ -66,10 +68,14 @@ struct CardView: View {
                 }
                 .onEnded { _ in
                     if abs(offset.width) > 100 {
-                        if offset.width < 0 {
+                        if offset.width > 0 {
+                            feedback.notificationOccurred(.success)
+                            removal?(false)
+                        } else {
                             feedback.notificationOccurred(.error)
+                            removal?(true)
+                            offset = .zero
                         }
-                        removal?()
                     } else {
                         offset = .zero
                     }
