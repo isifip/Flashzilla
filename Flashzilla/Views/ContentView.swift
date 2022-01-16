@@ -18,7 +18,7 @@ struct ContentView: View {
     
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @Environment(\.accessibilityVoiceOverEnabled) var voiceOverEnabled
-    @State private var cards = [Card]()
+    @State private var cards = DataManager.load()
     
     @State private var timeRemaining = 100
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -147,13 +147,7 @@ struct ContentView: View {
         .sheet(isPresented: $showingEditScreen, onDismiss: resetcards, content: EditCardView.init)
         .onAppear(perform: resetcards)
     }
-    func loadData() {
-        if let data = UserDefaults.standard.data(forKey: "Cards") {
-            if let decoded = try? JSONDecoder().decode([Card].self, from: data) {
-                cards = decoded
-            }
-        }
-    }
+
     func removeCard(at index: Int, reinsert: Bool) {
         guard index >= 0 else { return }
         if reinsert {
@@ -168,7 +162,7 @@ struct ContentView: View {
     func resetcards() {
         timeRemaining = 100
         isActive = true
-        loadData()
+        cards = DataManager.load()
     }
 }
 
